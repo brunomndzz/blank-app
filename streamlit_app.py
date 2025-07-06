@@ -9,41 +9,38 @@ transactions = [
     {
         "transaction": "Increase depreciation expense by $10 (40% tax)",
         "answers": {
-            # ─── Income Statement ─────────────────────────────
-            "Minus Dep&Amort":    ("+", 10.0),   # depreciation ↑10
-            "EBIT":               ("-", 10.0),   # EBIT ↓10
-            "Pre-Tax Income":     ("-", 10.0),   # pre-tax ↓10
-            "Minus Taxes (40%)":  ("-",  4.0),   # tax expense ↓4
-            "Net Income":         ("-",  6.0),   # net income ↓6
-
-            # ─── Balance Sheet ─────────────────────────────
-            "Cash":                      ("+",  4.0),  # cash ↑4
-            "PPE":                       ("-", 10.0),  # PPE ↓10
-            "Accumulated Depreciation":  ("+", 10.0),  # Accum Depr ↑10
-            "Retained Earnings":         ("-",  6.0),  # RE ↓6
-
-            # ─── Cash Flow Statement ────────────────────────
-            "Net Income":                     ("-",  6.0),  # starting NI ↓6
-            "Depreciation & Amortization":    ("+", 10.0),  # add‐back +10
-            "Changes in Accounts receivable": ("0",   0.0),
-            "Changes in Inventories":         ("0",   0.0),
-            "Changes in Accounts payable":    ("0",   0.0),
-            "Changes in Deferred revenue":    ("0",   0.0),
-            "Cash flow from operating activities": ("+",  4.0),  # net +4
-            "Purchase of PPE (CAPEX)":            ("0",   0.0),
-            "Cash flow from investing activities":("0",   0.0),
-            "Repayment of term debt Inc/dec Equity":("0",0.0),
-            "Proceeds from share issuance Inc/dec debt":("0",0.0),
-            "Dividends":                          ("0",   0.0),
-            "Cash flow from financing activities":("0",   0.0),
-            "Beginning cash balance":             ("0",   0.0),
-            "Total change in cash":               ("+",   4.0),
-            "Ending cash balance":                ("+",   4.0),
+            "Minus Dep&Amort":    ("+", 10.0),
+            "EBIT":               ("-", 10.0),
+            "Pre-Tax Income":     ("-", 10.0),
+            "Minus Taxes (40%)":  ("-",  4.0),
+            "Net Income":         ("-",  6.0),
+            "Cash":                      ("+",  4.0),
+            "PPE":                       ("-", 10.0),
+            "Accumulated Depreciation":  ("+", 10.0),
+            "Retained Earnings":         ("-",  6.0),
+            "Depreciation & Amortization":    ("+", 10.0),
+            "Cash flow from operating activities": ("+",  4.0),
+            "Ending cash balance":                ("+",  4.0),
         }
     },
-
-    # … add more here …
-]
+    {
+        "transaction": "Revenue increases by $100 and OPEX increases by $40 (40% tax)",
+        "answers": {
+            # ─── Income Statement ─────────────────────────────
+            "Revenue":               ("+", 100.0),
+            "Gross profit":          ("+", 100.0),
+            "OPEX":                  ("+",  40.0),
+            "EBIT":                  ("+",  60.0),
+            "Pre-Tax Income":        ("+",  60.0),
+            "Minus Taxes (40%)":     ("-",  24.0),
+            "Net Income":            ("+",  36.0),
+            # ─── Balance Sheet ─────────────────────────────
+            "Cash":                  ("+",  36.0),
+            "Retained Earnings":     ("+",  36.0),
+            # ─── Cash Flow Statement ────────────────────────
+            "Cash flow from operating activities": ("+", 36.0),
+            "Ending cash balance":               ("+", 36.0),
+        }
 
 # ── 2) Row labels exactly as in your template ─────────────────────────────────
 income_lines = [
