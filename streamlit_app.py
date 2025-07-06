@@ -155,7 +155,6 @@ if st.button("📝 Show Statement Changes"):
         st.write(style_balance(bs_df))
     with tab3:
         st.write(style_cashflow(cfs_df))
-
 # ── 8) Check the user’s inputs and give feedback ─────────────────────────────
 if st.button("✅ Check Answers"):
     st.subheader("🧠 Feedback")
@@ -182,3 +181,4 @@ if st.button("✅ Check Answers"):
 
     st.markdown("**Cash Flow Statement**")
     for ln in cfs_lines:
+        check_line("Cash Flow Statement", ln)
