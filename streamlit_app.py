@@ -253,3 +253,66 @@ if st.button("✅ Check Answers"):
     st.markdown("**Cash Flow Statement**")
     for ln in cfs_lines:
         check_line("Cash Flow Statement", ln)
+        # ── Custom CSS for better visuals ─────────────────────────────────────────────
+st.markdown(
+    """
+    <style>
+      /* Global font */
+      html, body, [class*="css"]  {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      /* Container padding */
+      .stContainer {
+        padding: 1.5rem 2rem;
+      }
+
+      /* Section header style */
+      .section-header {
+        font-size: 1.2rem;
+        font-weight: bold;
+        background-color: #2C3E50;
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Divider styling */
+      .stDivider {
+        margin: 1.5rem 0;
+      }
+
+      /* Table cell padding */
+      .stDataFrame td {
+        padding: 0.4rem 0.8rem;
+      }
+      .stDataFrame th {
+        padding: 0.6rem 0.8rem;
+      }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+tab_is, tab_bs, tab_cfs = st.tabs([
+    "Income Statement", "Balance Sheet", "Cash Flow Statement"
+])
+
+with tab_is:
+    st.markdown('<div class="section-header">Income Statement</div>', unsafe_allow_html=True)
+    st.write(style_income(is_df))
+    st.divider()  # nice horizontal line
+
+with tab_bs:
+    st.markdown('<div class="section-header">Balance Sheet</div>', unsafe_allow_html=True)
+    st.write(style_balance(bs_df))
+    st.divider()
+
+with tab_cfs:
+    st.markdown('<div class="section-header">Cash Flow Statement</div>', unsafe_allow_html=True)
+    st.write(style_cashflow(cfs_df))
+    st.title("📊 3-Statement Transaction Trainer")
+st.write("")  # blank line
+
+scenario = st.selectbox("Select a transaction:", [...])
+st.write("")  # extra space before tabs
