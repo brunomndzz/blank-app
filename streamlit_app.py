@@ -216,7 +216,7 @@ def style_balance(df: pd.DataFrame):
         elif row.name in bs_lines[9:16]:
             color = "#313030"
         else:
-            color = "#313030"
+            color = "#6B6B6B"
         return [f"background-color: {color};"] * len(row)
 
     return (
