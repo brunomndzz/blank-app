@@ -226,30 +226,30 @@ render_statement(col_bs, "Balance Sheet", bs_lines, answers)
 # Cash Flow Statement
 render_statement(col_cfs, "Cash Flow Statement", cfs_lines, answers)
 
-# ── 5) Check Answers and show colored feedback ────────────────────────────────
+# ── 5) Feedback ───────────────────────────────────────────────────────────────
 if st.button("✅ Check Answers"):
     st.subheader("🧠 Feedback")
-    def fb(line):
-        sel_sign, sel_amt = st.session_state[f"{heading}_{line}"] \
-            if heading == current_heading else (None,None)
-        corr_sign, corr_amt = answers.get(line, ("0",0.0))
-        ok = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 0.01
+
+    def check_line(statement_name, line):
+        sel_sign, sel_amt = st.session_state[f"{statement_name}_{line}"]
+        corr_sign, corr_amt = answers.get(line, ("0", 0.0))
+        ok = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 1e-6
         color = "#D5F5E3" if ok else "#FADBD8"
-        return f'<div style="background:{color};padding:4px;border-radius:3px">' \
-               f"{line}: {'✅' if ok else f'❌ (expected {corr_sign}{corr_amt})'}" \
-               f'</div>'
+        icon  = "✅" if ok else f"❌ (expected {corr_sign}{corr_amt})"
+        st.markdown(
+            f'<div style="background:{color};padding:4px;border-radius:3px">'
+            f"{line}: {icon}</div>",
+            unsafe_allow_html=True
+        )
 
-    # Income feedback
     st.markdown("**Income Statement**")
-    for line in income_lines:
-        st.markdown(fb(line), unsafe_allow_html=True)
+    for ln in income_lines:
+        check_line("Income Statement", ln)
 
-    # Balance feedback
     st.markdown("**Balance Sheet**")
-    for line in bs_lines:
-        st.markdown(fb(line), unsafe_allow_html=True)
+    for ln in bs_lines:
+        check_line("Balance Sheet", ln)
 
-    # CashFlow feedback
     st.markdown("**Cash Flow Statement**")
-    for line in cfs_lines:
-        st.markdown(fb(line), unsafe_allow_html=True)
+    for ln in cfs_lines:
+        check_line("Cash Flow Statement", ln)
