@@ -2,167 +2,104 @@ import streamlit as st
 import pandas as pd
 import random
 
-# ── Setup ─────────────────────────────────────────────────────────────────────
+# ── SETUP & GLOBAL CSS ─────────────────────────────────────────────────────────
 st.set_page_config(layout="wide")
+st.markdown("""
+    <style>
+      /* Global font, dark background */
+      html, body, [class*="css"] { 
+        font-family: 'Segoe UI', sans-serif; 
+        background: #1e1e1e; 
+        color: #ddd;
+      }
+      .stApp { padding: 1.5rem; }
+
+      /* Section headers */
+      .section-header {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: #fff;
+        border-bottom: 2px solid #444;
+        padding-bottom: 0.25rem;
+        margin-bottom: 0.75rem;
+      }
+
+      /* Label vs control cells */
+      .label-cell { text-align: left; }
+      .control-cell { text-align: right; }
+
+      /* Uniform input widths */
+      .stSelectbox, .stNumberInput > div {
+        width: 4.5rem !important;
+        display: inline-block;
+      }
+    </style>
+""", unsafe_allow_html=True)
+
 sign_options = ["+", "-", "0"]  # 0 = no effect
 
-# ── 1) Define a single scenario, with “correct” sign & value per line ─────────
+# ── 1) Your Transactions ────────────────────────────────────────────────────────
 transactions = [
     {
         "transaction": "Increase depreciation expense by $10 (40% tax)",
         "answers": {
             # Income Statement
-            "Minus Dep&Amort":                        ("+", 10.0),
-            "EBIT":                                   ("-", 10.0),
-            "Pre-Tax Income":                         ("-", 10.0),
-            "Minus Taxes (40%)":                      ("-",  4.0),
-            "Net Income":                             ("-",  6.0),
+            "Minus Dep&Amort":                     ("+", 10.0),
+            "EBIT":                                  ("-", 10.0),
+            "Pre-Tax Income":                        ("-", 10.0),
+            "Minus Taxes (40%)":                     ("-",  4.0),
+            "Net Income":                            ("-",  6.0),
             # Balance Sheet
-            "PPE":                                    ("-", 10.0),
-            "Accumulated Depreciation":               ("+", 10.0),
-            "Retained Earnings":                      ("-",  6.0),
+            "PPE":                                   ("-", 10.0),
+            "Accumulated Depreciation":             ("+", 10.0),
+            "Retained Earnings":                    ("-",  6.0),
             # Cash Flow Statement
-            "Depreciation & Amortization":            ("+", 10.0),
-            "Cash flow from operating activities":    ("+",  4.0),
-            "Ending cash balance":                    ("+",  4.0),
+            "Depreciation & Amortization":           ("+", 10.0),
+            "Cash flow from operating activities":   ("+",  4.0),
+            "Ending cash balance":                   ("+",  4.0),
         },
     },
     {
         "transaction": "Revenue increases by $100 and OPEX increases by $40 (40% tax)",
         "answers": {
             # Income Statement
-            "Revenue":                                ("+", 100.0),
-            "Gross profit":                           ("+", 100.0),
-            "OPEX":                                   ("+",  40.0),
-            "EBIT":                                   ("+",  60.0),
-            "Pre-Tax Income":                         ("+",  60.0),
-            "Minus Taxes (40%)":                      ("-",  24.0),
-            "Net Income":                             ("+",  36.0),
+            "Revenue":                               ("+", 100.0),
+            "Gross profit":                          ("+", 100.0),
+            "OPEX":                                  ("+",  40.0),
+            "EBIT":                                  ("+",  60.0),
+            "Pre-Tax Income":                        ("+",  60.0),
+            "Minus Taxes (40%)":                     ("-",  24.0),
+            "Net Income":                            ("+",  36.0),
             # Balance Sheet
-            "Cash":                                   ("+",  36.0),
-            "Retained Earnings":                      ("+",  36.0),
+            "Cash":                                  ("+",  36.0),
+            "Retained Earnings":                     ("+",  36.0),
             # Cash Flow Statement
-            "Cash flow from operating activities":    ("+",  36.0),
-            "Ending cash balance":                    ("+",  36.0),
+            "Cash flow from operating activities":   ("+",  36.0),
+            "Ending cash balance":                   ("+",  36.0),
         },
     },
     {
         "transaction": "Accounts Receivable increase of $50 (40% tax)",
         "answers": {
             # Income Statement
-            "Revenue":                                ("+",  50.0),
-            "Pre-Tax Income":                         ("+",  50.0),
-            "Minus Taxes (40%)":                      ("-",  20.0),
-            "Net Income":                             ("+",  30.0),
+            "Revenue":                               ("+",  50.0),
+            "Pre-Tax Income":                        ("+",  50.0),
+            "Minus Taxes (40%)":                     ("-",  20.0),
+            "Net Income":                            ("+",  30.0),
             # Balance Sheet
-            "Accounts receivable":                    ("+",  50.0),
-            "Cash":                                   ("-",  20.0),
-            "Retained Earnings":                      ("+",  30.0),
+            "Accounts receivable":                   ("+",  50.0),
+            "Cash":                                  ("-",  20.0),
+            "Retained Earnings":                     ("+",  30.0),
             # Cash Flow Statement
-            "Changes in Accounts receivable":         ("-",  50.0),
-            "Cash flow from operating activities":    ("-",  20.0),
-            "Ending cash balance":                    ("-",  20.0),
+            "Changes in Accounts receivable":        ("-",  50.0),
+            "Cash flow from operating activities":   ("-",  20.0),
+            "Ending cash balance":                   ("-",  20.0),
         },
     },
-    {
-        "transaction": "Depreciation increases by $30 (40% tax)",
-        "answers": {
-            # Income Statement
-            "Minus Dep&Amort":                        ("+",  30.0),
-            "EBIT":                                   ("-",  30.0),
-            "Pre-Tax Income":                         ("-",  30.0),
-            "Minus Taxes (40%)":                      ("-",  12.0),
-            "Net Income":                             ("-",  18.0),
-            # Balance Sheet
-            "PPE":                                    ("-",  30.0),
-            "Accumulated Depreciation":               ("+",  30.0),
-            "Retained Earnings":                      ("-",  18.0),
-            "Cash":                                   ("+",  12.0),
-            # Cash Flow Statement
-            "Depreciation & Amortization":            ("+",  30.0),
-            "Cash flow from operating activities":    ("+",  12.0),
-            "Ending cash balance":                    ("+",  12.0),
-        },
-    },
-    {
-        "transaction": "Purchase of PPE increases by $100",
-        "answers": {
-            # Cash Flow Statement
-            "Purchase of PPE (CAPEX)":                ("-", 100.0),
-            "Cash flow from investing activities":    ("-", 100.0),
-            "Ending cash balance":                    ("-", 100.0),
-            # Balance Sheet
-            "Cash":                                   ("-", 100.0),
-            "PPE":                                    ("+", 100.0),
-        },
-    },
-    {
-        "transaction": "Accounts payable increases by $70",
-        "answers": {
-            # Cash Flow Statement
-            "Changes in Accounts payable":            ("+",  70.0),
-            "Cash flow from operating activities":    ("+",  70.0),
-            "Ending cash balance":                    ("+",  70.0),
-            # Balance Sheet
-            "Cash":                                   ("+",  70.0),
-            "Accounts payable":                       ("+",  70.0),
-        },
-    },
-    {
-        "transaction": "New debt issuance of $150",
-        "answers": {
-            # Cash Flow Statement
-            "Cash flow from financing activities":    ("+", 150.0),
-            "Ending cash balance":                    ("+", 150.0),
-            # Balance Sheet
-            "Cash":                                   ("+", 150.0),
-            "Term debt":                              ("+", 150.0),
-        },
-    },
-    {
-        "transaction": "Inventory increases by $60",
-        "answers": {
-            # Balance Sheet
-            "Inventories":                            ("+",  60.0),
-            "Cash":                                   ("-",  60.0),
-            # Cash Flow Statement
-            "Changes in Inventories":                 ("-",  60.0),
-            "Cash flow from operating activities":    ("-",  60.0),
-            "Ending cash balance":                    ("-",  60.0),
-        },
-    },
-    {
-        "transaction": "Deferred revenue decreases by $80 (40% tax)",
-        "answers": {
-            # Income Statement
-            "Revenue":                                ("+",  80.0),
-            "Pre-Tax Income":                         ("+",  80.0),
-            "Minus Taxes (40%)":                      ("-",  32.0),
-            "Net Income":                             ("+",  48.0),
-            # Balance Sheet
-            "Deferred revenue":                       ("-",  80.0),
-            "Cash":                                   ("-",  32.0),
-            "Retained Earnings":                      ("+",  48.0),
-            # Cash Flow Statement
-            "Changes in Deferred revenue":            ("-",  80.0),
-            "Cash flow from operating activities":    ("-",  32.0),
-            "Ending cash balance":                    ("-",  32.0),
-        },
-    },
-    {
-        "transaction": "Issuance of common stock by $100",
-        "answers": {
-            # Cash Flow Statement
-            "Cash flow from financing activities":    ("+", 100.0),
-            "Ending cash balance":                    ("+", 100.0),
-            # Balance Sheet
-            "Cash":                                   ("+", 100.0),
-            "Common stock":                           ("+", 100.0),
-        },
-    },
+    # … add your other scenarios here …
 ]
 
-# ── 2) Line labels ─────────────────────────────────────────────────────────────
+# ── 2) Row-labels ────────────────────────────────────────────────────────────────
 income_lines = [
     "Revenue", "Minus COGS", "Gross profit",
     "OPEX", "Minus SG&A", "Minus S&M", "Minus R&D",
@@ -186,67 +123,64 @@ cfs_lines = [
     "Cash flow from financing activities", "Ending cash balance"
 ]
 
-# ── 3) Helper to build a zeroed DataFrame and apply the answers ───────────────
+# ── 3) Build zeroed DataFrame & populate ───────────────────────────────────────
 def build_df(lines, changes):
     df = pd.DataFrame(0.0, index=lines, columns=["Change"])
     for line, val in changes.items():
         if line in df.index:
-            # val might be ("+", amount) or already a number
-            amt = val[1] if (isinstance(val, tuple) and len(val) >= 2) else val
+            amt = val[1] if isinstance(val, tuple) else val
             df.at[line, "Change"] = amt
     return df.round(2)
 
-# ── 4) Styling functions ──────────────────────────────────────────────────────
-def style_income(df: pd.DataFrame):
+# ── 4) Styling for each statement ──────────────────────────────────────────────
+def style_income(df):
     return (
         df.style
           .set_caption("<b>Income Statement Changes</b>")
           .format("{:+.2f}")
           .set_table_styles([
-              {"selector": "thead", "props": [("background-color", "#f9e79f")]},
-              {"selector": "tbody tr", "props": [("background-color", "#fcf3cf")]}
+            {"selector": "thead", "props": [("background-color", "#f9e79f")]},
+            {"selector": "tbody tr", "props": [("background-color", "#fcf3cf")]}
           ])
           .set_properties(**{"text-align": "right"})
     )
 
-def style_balance(df: pd.DataFrame):
-    def section_color(row):
-        if row.name in bs_lines[:9]:
-            color = "#313030"
-        elif row.name in bs_lines[9:16]:
-            color = "#313030"
+def style_balance(df):
+    def color_row(r):
+        if r.name in bs_lines[:9]:
+            c = "#fadbd8"
+        elif r.name in bs_lines[9:16]:
+            c = "#f5b7b1"
         else:
-            color = "#6B6B6B"
-        return [f"background-color: {color};"] * len(row)
-
+            c = "#fadbd8"
+        return [f"background-color: {c};"] * len(r)
     return (
         df.style
           .set_caption("<b>Balance Sheet Changes</b>")
           .format("{:+.2f}")
-          .apply(section_color, axis=1)
+          .apply(color_row, axis=1)
           .set_properties(**{"text-align": "right"})
     )
 
-def style_cashflow(df: pd.DataFrame):
-    def cf_color(row):
-        key = row.name.lower()
+def style_cashflow(df):
+    def color_row(r):
+        key = r.name.lower()
         if "operating" in key:
-            color = "#313030"
+            c = "#d5f5e3"
         elif "investing" in key:
-            color = "#313030"
+            c = "#a9dfbf"
         else:
-            color = "#313030"
-        return [f"background-color: {color};"] * len(row)
-
+            c = "#d5f5e3"
+        return [f"background-color: {c};"] * len(r)
     return (
         df.style
           .set_caption("<b>Cash Flow Statement Changes</b>")
           .format("{:+.2f}")
-          .apply(cf_color, axis=1)
+          .apply(color_row, axis=1)
           .set_properties(**{"text-align": "right"})
     )
 
-# ── 5) Pick & display the scenario inputs ─────────────────────────────────────
+# ── 5) Pick & display scenario ─────────────────────────────────────────────────
 if "tx" not in st.session_state:
     st.session_state.tx = random.choice(transactions)
 if st.button("🔄 New Transaction"):
@@ -256,65 +190,50 @@ st.title("📊 3-Statement Transaction Trainer")
 st.markdown(f"**Scenario:** {st.session_state.tx['transaction']}")
 answers = st.session_state.tx["answers"]
 
-# ── 6) Render the interactive dropdowns & number inputs ──────────────────────
+# ── 6) Render inputs in a 3-column grid ────────────────────────────────────────
 col_is, col_bs, col_cfs = st.columns(3)
 
 def render_statement(col, heading, lines):
-    col.markdown(
-        f'<div style="background:#2C3E50;color:white;padding:8px;border-radius:4px">'
-        f'<strong>{heading}</strong></div>',
-        unsafe_allow_html=True
-    )
+    col.markdown(f'<div class="section-header">{heading}</div>', unsafe_allow_html=True)
     for line in lines:
-        c1, c2, c3 = col.columns([3, 1, 1])
-        c1.markdown(f"**{line}**")
-        sel_sign = c2.selectbox("", sign_options, key=f"{heading}_{line}_sign")
-        sel_amt  = c3.number_input("", min_value=0.0, format="%.2f",
-                                  key=f"{heading}_{line}_amt")
-        st.session_state[f"{heading}_{line}"] = (sel_sign, sel_amt)
+        lc, sc, nc = col.columns([4,1,1], gap="small")
+        lc.markdown(f'<div class="label-cell">{line}</div>', unsafe_allow_html=True)
+        sign = sc.selectbox("", sign_options, key=f"{heading}_{line}_sign", label_visibility="collapsed")
+        amt  = nc.number_input("", min_value=0.0, format="%.2f",
+                               key=f"{heading}_{line}_amt", label_visibility="collapsed")
+        st.session_state[f"{heading}_{line}"] = (sign, amt)
 
-render_statement(col_is, "Income Statement", income_lines)
-render_statement(col_bs, "Balance Sheet", bs_lines)
-render_statement(col_cfs, "Cash Flow Statement", cfs_lines)
+render_statement(col_is, "Income Statement",     income_lines)
+render_statement(col_bs, "Balance Sheet",         bs_lines)
+render_statement(col_cfs,"Cash Flow Statement",   cfs_lines)
 
-# ── 7) Show styled simulation of the “correct” answers ───────────────────────
+# ── 7) “Show Statement Changes” ───────────────────────────────────────────────
 if st.button("📝 Show Statement Changes"):
     is_df  = build_df(income_lines, answers)
     bs_df  = build_df(bs_lines,     answers)
     cfs_df = build_df(cfs_lines,    answers)
+    t1,t2,t3 = st.tabs(["Income Statement", "Balance Sheet", "Cash Flow Statement"])
+    with t1: st.write(style_income(is_df))
+    with t2: st.write(style_balance(bs_df))
+    with t3: st.write(style_cashflow(cfs_df))
 
-    tab1, tab2, tab3 = st.tabs([
-        "Income Statement", "Balance Sheet", "Cash Flow Statement"
-    ])
-    with tab1:
-        st.write(style_income(is_df))
-    with tab2:
-        st.write(style_balance(bs_df))
-    with tab3:
-        st.write(style_cashflow(cfs_df))
-# ── 8) Check the user’s inputs and give feedback ─────────────────────────────
+# ── 8) Check user inputs & feedback ────────────────────────────────────────────
 if st.button("✅ Check Answers"):
     with st.expander("🧠 Feedback", expanded=True):
-        def check_line(statement, line):
-            sel_sign, sel_amt = st.session_state[f"{statement}_{line}"]
+        def check_line(stmt, line):
+            sel_sign, sel_amt = st.session_state[f"{stmt}_{line}"]
             corr_sign, corr_amt = answers.get(line, ("0", 0.0))
-            ok    = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 1e-6
-            color = "#000000" if ok else "#07079C"
-            icon  = "✅" if ok else f"❌ (expected {corr_sign}{corr_amt})"
+            ok = sel_sign == corr_sign and abs(sel_amt - corr_amt) < 1e-6
+            bg = "#2ecc71" if ok else "#e74c3c"
+            ico = "✅" if ok else f"❌ (exp: {corr_sign}{corr_amt})"
             st.markdown(
-                f'<div style="background:{color};padding:4px;border-radius:3px">'
-                f"{line}: {icon}</div>",
-                unsafe_allow_html=True
+                f'<div style="background:{bg};padding:4px;border-radius:3px">'
+                f"{line}: {ico}</div>", unsafe_allow_html=True
             )
 
         st.markdown("**Income Statement**")
-        for ln in income_lines:
-            check_line("Income Statement", ln)
-
+        for ln in income_lines:      check_line("Income Statement", ln)
         st.markdown("**Balance Sheet**")
-        for ln in bs_lines:
-            check_line("Balance Sheet", ln)
-
+        for ln in bs_lines:          check_line("Balance Sheet", ln)
         st.markdown("**Cash Flow Statement**")
-        for ln in cfs_lines:
-            check_line("Cash Flow Statement", ln)
+        for ln in cfs_lines:         check_line("Cash Flow Statement", ln)
