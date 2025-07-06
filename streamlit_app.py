@@ -1,151 +1,123 @@
 import streamlit as st
 import random
 
-# 🔄 1) Define your transactions and, for each, the “correct” effect per line
+st.set_page_config(layout="wide")
+
+# ── 1) Define a single scenario, with “correct” sign & value per line ─────────
 transactions = [
     {
-        "transaction": "Increase depreciation expense by $10 (40% tax rate)",
+        "transaction": "Increase depreciation expense by $10 (40% tax)",
         "answers": {
             # Income Statement
-            "Revenue":                   "No effect",
-            "Minus COGS":                "No effect",
-            "Gross profit":              "No effect",
-            "OPEX":                      "No effect",
-            "Minus SG&A":                "No effect",
-            "Minus S&M":                 "No effect",
-            "Minus R&D":                 "No effect",
-            "Minus Dep&Amort":           "Increase",
-            "EBIT":                      "Decrease",
-            "Interest income or expense":"No effect",
-            "Pre-Tax Income":            "Decrease",
-            "Minus Taxes (40%)":         "Decrease",
-            "Net Income":                "Decrease",
+            "Minus Dep&Amort": ("+", 10.0),
+            "EBIT": ("-", 10.0),
+            "Pre-Tax Income": ("-", 10.0),
+            "Minus Taxes (40%)": ("-", 4.0),
+            "Net Income": ("-", 6.0),
             # Balance Sheet
-            "Cash":                      "No effect",
-            "Accounts receivable":       "No effect",
-            "Inventories":               "No effect",
-            "Total current assets":      "No effect",
-            "PPE":                       "No effect",
-            "Accumulated Depreciation":  "Increase",
-            "Net PPE":                   "Decrease",
-            "Total non-current assets":  "No effect",
-            "Total Assets":              "No effect",
-            "Accounts payable":          "No effect",
-            "Notes payable":             "No effect",
-            "Deferred revenue":          "No effect",
-            "Total current liabilities": "No effect",
-            "Term debt":                 "No effect",
-            "Total non-current liabilities":"No effect",
-            "Total Liabilities":         "No effect",
-            "Common stock":              "No effect",
-            "Retained Earnings":         "Decrease",
-            "Total Shareholders' Equity":"No effect",
-            "Total Liabilities & Shareholders' Equity":"No effect",
-            # Cash Flow Statement
-            "Net Income":                "No effect",  # Net Income already flows in, but we won’t quiz here
-            "Depreciation & Amortization":"Increase",
-            "Changes in Accounts receivable":"No effect",
-            "Changes in Inventories":"No effect",
-            "Changes in Accounts payable":"No effect",
-            "Changes in Notes payable":"No effect",
-            "Changes in Deferred revenue":"No effect",
-            "Cash flow from operating activities":"Increase",
-            "Purchase of PPE (CAPEX)":"No effect",
-            "Cash flow from investing activities":"No effect",
-            "Repayment of term debt Inc/dec Equity":"No effect",
-            "Proceeds from share issuance Inc/dec debt":"No effect",
-            "Dividends":"No effect",
-            "Cash flow from financing activities":"No effect",
-            "Beginning cash balance":"No effect",
-            "Total change in cash":"Increase",
-            "Ending cash balance":"Increase",
+            "PPE": ("-", 10.0),
+            "Accumulated Depreciation": ("+", 10.0),
+            "Retained Earnings": ("-", 6.0),
+            # Cash Flow
+            "Depreciation & Amortization": ("+", 10.0),
+            "Cash flow from operating activities": ("+", 4.0),
+            "Ending cash balance": ("+", 4.0),
         }
     },
-    # … add your other transactions here
+    # … add more scenarios here
 ]
 
-# 🔽 2) List out every row label exactly as in your sheet
+# ── 2) Define your row-labels for each statement ───────────────────────────────
 income_lines = [
     "Revenue", "Minus COGS", "Gross profit",
     "OPEX", "Minus SG&A", "Minus S&M", "Minus R&D",
     "Minus Dep&Amort", "EBIT", "Interest income or expense",
     "Pre-Tax Income", "Minus Taxes (40%)", "Net Income"
 ]
-
 bs_lines = [
     "Cash", "Accounts receivable", "Inventories", "Total current assets",
     "PPE", "Accumulated Depreciation", "Net PPE", "Total non-current assets",
     "Total Assets", "Accounts payable", "Notes payable", "Deferred revenue",
     "Total current liabilities", "Term debt", "Total non-current liabilities",
     "Total Liabilities", "Common stock", "Retained Earnings",
-    "Total Shareholders' Equity", "Total Liabilities & Shareholders' Equity"
+    "Total Equity", "Total Liabilities & Equity"
 ]
-
 cfs_lines = [
     "Net Income", "Depreciation & Amortization",
     "Changes in Accounts receivable", "Changes in Inventories",
-    "Changes in Accounts payable", "Changes in Notes payable",
-    "Changes in Deferred revenue", "Cash flow from operating activities",
+    "Changes in Accounts payable", "Changes in Deferred revenue",
+    "Cash flow from operating activities",
     "Purchase of PPE (CAPEX)", "Cash flow from investing activities",
     "Repayment of term debt Inc/dec Equity",
     "Proceeds from share issuance Inc/dec debt", "Dividends",
-    "Cash flow from financing activities", "Beginning cash balance",
-    "Total change in cash", "Ending cash balance"
+    "Cash flow from financing activities",
+    "Beginning cash balance", "Total change in cash", "Ending cash balance"
 ]
 
-# 3️⃣ The three choice options
-options = ["Increase", "Decrease", "No effect"]
+sign_options = ["+", "-", "0"]  # 0 = no effect
 
-st.title("📊 3-Statement Line-Item Trainer")
-
-# 4️⃣ Randomize which scenario you’re on
+# ── 3) Pick a random transaction ────────────────────────────────────────────────
 if "tx" not in st.session_state:
     st.session_state.tx = random.choice(transactions)
 if st.button("🔄 New Transaction"):
     st.session_state.tx = random.choice(transactions)
 
-st.subheader("📦 Transaction")
-st.write(st.session_state.tx["transaction"])
+st.title("📊 3-Statement Line-Item Trainer")
+st.write("**Scenario:**", st.session_state.tx["transaction"])
+answers = st.session_state.tx["answers"]
 
-# 5️⃣ Render the three columns of dropdowns
-col1, col2, col3 = st.columns(3)
+# ── 4) Build three colored panels side by side ────────────────────────────────
+col_is, col_bs, col_cfs = st.columns(3)
 
-col1.header("Income Statement")
-user_income = {
-    line: col1.selectbox(line, options, key=f"is_{line}")
-    for line in income_lines
-}
+def render_statement(col, heading, lines, answer_dict):
+    # Heading with dark background
+    col.markdown(
+        f'<div style="background:#2C3E50;color:white;padding:8px;border-radius:4px">'
+        f'<strong>{heading}</strong></div>',
+        unsafe_allow_html=True
+    )
+    # For each line create a 3-column row: label | sign | amount
+    for line in lines:
+        a_sign, a_val = answer_dict.get(line, ("0", 0.0))
+        c1, c2, c3 = col.columns([3,1,1])
+        c1.markdown(f"**{line}**")
+        sel_sign = c2.selectbox("", sign_options, key=f"{heading}_{line}_sign")
+        sel_amt  = c3.number_input("", min_value=0.0, format="%.2f",
+                                   key=f"{heading}_{line}_amt")
+        # store back into state for checking
+        st.session_state[f"{heading}_{line}"] = (sel_sign, sel_amt)
 
-col2.header("Balance Sheet")
-user_bs = {
-    line: col2.selectbox(line, options, key=f"bs_{line}")
-    for line in bs_lines
-}
+# Income Statement
+render_statement(col_is, "Income Statement", income_lines, answers)
+# Balance Sheet
+render_statement(col_bs, "Balance Sheet", bs_lines, answers)
+# Cash Flow Statement
+render_statement(col_cfs, "Cash Flow Statement", cfs_lines, answers)
 
-col3.header("Cash Flow Statement")
-user_cfs = {
-    line: col3.selectbox(line, options, key=f"cfs_{line}")
-    for line in cfs_lines
-}
-
-# 6️⃣ Check answers and show ✔️/❌
+# ── 5) Check Answers and show colored feedback ────────────────────────────────
 if st.button("✅ Check Answers"):
     st.subheader("🧠 Feedback")
-    answers = st.session_state.tx["answers"]
+    def fb(line):
+        sel_sign, sel_amt = st.session_state[f"{heading}_{line}"] \
+            if heading == current_heading else (None,None)
+        corr_sign, corr_amt = answers.get(line, ("0",0.0))
+        ok = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 0.01
+        color = "#D5F5E3" if ok else "#FADBD8"
+        return f'<div style="background:{color};padding:4px;border-radius:3px">' \
+               f"{line}: {'✅' if ok else f'❌ (expected {corr_sign}{corr_amt})'}" \
+               f'</div>'
 
-    def feedback(line, selection):
-        correct = answers.get(line, "No effect")
-        return "✅" if selection == correct else f"❌ (expected {correct})"
-
+    # Income feedback
     st.markdown("**Income Statement**")
     for line in income_lines:
-        st.write(f"- {line}: {feedback(line, user_income[line])}")
+        st.markdown(fb(line), unsafe_allow_html=True)
 
+    # Balance feedback
     st.markdown("**Balance Sheet**")
     for line in bs_lines:
-        st.write(f"- {line}: {feedback(line, user_bs[line])}")
-col3.header("Cash Flow Statement")
-user_cfs = {}
-for line in cfs_lines:
-    user_cfs[line] = col3.selectbox(line, options, key=f"cfs_{line}")
-    
+        st.markdown(fb(line), unsafe_allow_html=True)
+
+    # CashFlow feedback
+    st.markdown("**Cash Flow Statement**")
+    for line in cfs_lines:
+        st.markdown(fb(line), unsafe_allow_html=True)
