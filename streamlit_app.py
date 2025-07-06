@@ -14,8 +14,8 @@ transactions = [
             "Pre-Tax Income":     ("-", 10.0),
             "Minus Taxes (40%)":  ("-",  4.0),
             "Net Income":         ("-",  6.0),
-            "Cash":                      ("+",  4.0),
-            "PPE":                       ("-", 10.0),
+            "Cash":               ("+",  4.0),
+            "PPE":                ("-", 10.0),
             "Accumulated Depreciation":  ("+", 10.0),
             "Retained Earnings":         ("-",  6.0),
             "Depreciation & Amortization":    ("+", 10.0),
@@ -26,7 +26,6 @@ transactions = [
     {
         "transaction": "Revenue increases by $100 and OPEX increases by $40 (40% tax)",
         "answers": {
-            # ─── Income Statement ─────────────────────────────
             "Revenue":               ("+", 100.0),
             "Gross profit":          ("+", 100.0),
             "OPEX":                  ("+",  40.0),
@@ -34,14 +33,29 @@ transactions = [
             "Pre-Tax Income":        ("+",  60.0),
             "Minus Taxes (40%)":     ("-",  24.0),
             "Net Income":            ("+",  36.0),
-            # ─── Balance Sheet ─────────────────────────────
             "Cash":                  ("+",  36.0),
             "Retained Earnings":     ("+",  36.0),
-            # ─── Cash Flow Statement ────────────────────────
             "Cash flow from operating activities": ("+", 36.0),
             "Ending cash balance":               ("+", 36.0),
         }
+    },  # ← Closing brace + comma for second scenario
 
+    {
+        "transaction": "Accounts Receivable increase of $50 (40% tax)",
+        "answers": {
+            "Revenue":                       ("+", 50.0),
+            "Pre-Tax Income":                ("+", 50.0),
+            "Minus Taxes (40%)":             ("-", 20.0),
+            "Net Income":                    ("+", 30.0),
+            "Accounts receivable":           ("+", 50.0),
+            "Cash":                          ("-", 20.0),
+            "Retained Earnings":             ("+", 30.0),
+            "Changes in Accounts receivable":("-", 50.0),
+            "Cash flow from operating activities":("-", 20.0),
+            "Ending cash balance":           ("-", 20.0),
+        }
+    }   # ← No comma needed after the last scenario
+]  # ← Close the transactions list
 # ── 2) Row labels exactly as in your template ─────────────────────────────────
 income_lines = [
     "Revenue", "Minus COGS", "Gross profit",
