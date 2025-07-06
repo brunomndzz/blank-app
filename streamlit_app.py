@@ -212,11 +212,11 @@ def style_income(df: pd.DataFrame):
 def style_balance(df: pd.DataFrame):
     def section_color(row):
         if row.name in bs_lines[:9]:
-            color = "#fadbd8"
+            color = "#ee1d0a"
         elif row.name in bs_lines[9:16]:
-            color = "#f5b7b1"
+            color = "#ee1d0a"
         else:
-            color = "#fadbd8"
+            color = "#ee1d0a"
         return [f"background-color: {color};"] * len(row)
 
     return (
@@ -231,11 +231,11 @@ def style_cashflow(df: pd.DataFrame):
     def cf_color(row):
         key = row.name.lower()
         if "operating" in key:
-            color = "#d5f5e3"
+            color = "#013a19"
         elif "investing" in key:
-            color = "#a9dfbf"
+            color = "#013a19"
         else:
-            color = "#d5f5e3"
+            color = "#013a19"
         return [f"background-color: {color};"] * len(row)
 
     return (
@@ -318,4 +318,3 @@ if st.button("✅ Check Answers"):
         st.markdown("**Cash Flow Statement**")
         for ln in cfs_lines:
             check_line("Cash Flow Statement", ln)
-            
