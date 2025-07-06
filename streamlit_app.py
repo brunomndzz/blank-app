@@ -54,7 +54,107 @@ transactions = [
             "Cash flow from operating activities":("-", 20.0),
             "Ending cash balance":           ("-", 20.0),
         }
-    }   # ← No comma needed after the last scenario
+    }   {
+    "transaction": "Depreciation increases by $30 (40% tax)",
+    "answers": {
+        # Income Statement
+        "Minus Dep&Amort":              ("+", 30.0),
+        "EBIT":                         ("-", 30.0),
+        "Pre-Tax Income":               ("-", 30.0),
+        "Minus Taxes (40%)":            ("-", 12.0),
+        "Net Income":                   ("-", 18.0),
+        # Cash Flow Statement
+        "Depreciation & Amortization":  ("+", 30.0),
+        "Cash flow from operating activities": ("+", 12.0),
+        "Ending cash balance":                ("+", 12.0),
+        # Balance Sheet
+        "Cash":                         ("+", 12.0),
+        "PPE":                          ("-", 30.0),
+        "Accumulated Depreciation":     ("+", 30.0),
+        "Retained Earnings":            ("-", 18.0),
+    }
+},
+{
+    "transaction": "Purchase of PPE increases by $100",
+    "answers": {
+        # Income Statement – no effect
+        # Cash Flow Statement
+        "Purchase of PPE (CAPEX)":             ("-", 100.0),
+        "Cash flow from investing activities": ("-", 100.0),
+        "Ending cash balance":                 ("-", 100.0),
+        # Balance Sheet
+        "Cash":                                 ("-", 100.0),
+        "PPE":                                  ("+", 100.0),
+    }
+},
+{
+    "transaction": "Accounts payable increases by $70",
+    "answers": {
+        # Income Statement – no effect
+        # Cash Flow Statement
+        "Changes in Accounts payable":         ("+", 70.0),
+        "Cash flow from operating activities": ("+", 70.0),
+        "Ending cash balance":                 ("+", 70.0),
+        # Balance Sheet
+        "Cash":                                 ("+", 70.0),
+        "Accounts payable":                     ("+", 70.0),
+    }
+},
+{
+    "transaction": "New debt issuance increases term debt by $150",
+    "answers": {
+        # Income Statement – no effect
+        # Cash Flow Statement
+        "Cash flow from financing activities": ("+", 150.0),
+        "Ending cash balance":                 ("+", 150.0),
+        # Balance Sheet
+        "Cash":                                 ("+", 150.0),
+        "Term debt":                            ("+", 150.0),
+    }
+},
+{
+    "transaction": "Inventory increases by $60",
+    "answers": {
+        # Income Statement – no effect
+        # Cash Flow Statement
+        "Changes in Inventories":              ("-", 60.0),
+        "Cash flow from operating activities": ("-", 60.0),
+        "Ending cash balance":                 ("-", 60.0),
+        # Balance Sheet
+        "Cash":                                 ("-", 60.0),
+        "Inventories":                          ("+", 60.0),
+    }
+},
+{
+    "transaction": "Deferred revenue decreases by $80 (40% tax)",
+    "answers": {
+        # Income Statement
+        "Revenue":                              ("+", 80.0),
+        "Pre-Tax Income":                       ("+", 80.0),
+        "Minus Taxes (40%)":                    ("-", 32.0),
+        "Net Income":                           ("+", 48.0),
+        # Cash Flow Statement
+        "Changes in Deferred revenue":          ("-", 80.0),
+        "Cash flow from operating activities":  ("-", 32.0),
+        "Ending cash balance":                  ("-", 32.0),
+        # Balance Sheet
+        "Cash":                                 ("-", 32.0),
+        "Deferred revenue":                     ("-", 80.0),
+        "Retained Earnings":                    ("+", 48.0),
+    }
+},
+{
+    "transaction": "Issuance of common stock increases common stock by $100",
+    "answers": {
+        # Income Statement – no effect
+        # Cash Flow Statement
+        "Cash flow from financing activities":  ("+", 100.0),
+        "Ending cash balance":                  ("+", 100.0),
+        # Balance Sheet
+        "Cash":                                 ("+", 100.0),
+        "Common stock":                         ("+", 100.0),
+    }
+},# ← No comma needed after the last scenario
 ]  # ← Close the transactions list
 # ── 2) Row labels exactly as in your template ─────────────────────────────────
 income_lines = [
@@ -142,4 +242,5 @@ if st.button("✅ Check Answers"):
 
     st.markdown("**Cash Flow Statement**")
     for ln in cfs_lines:     check_line("Cash Flow Statement", ln)
+    
     
