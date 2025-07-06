@@ -294,28 +294,28 @@ if st.button("📝 Show Statement Changes"):
         st.write(style_cashflow(cfs_df))
 # ── 8) Check the user’s inputs and give feedback ─────────────────────────────
 if st.button("✅ Check Answers"):
-    st.subheader("🧠 Feedback")
+    with st.expander("🧠 Feedback", expanded=True):
+        def check_line(statement, line):
+            sel_sign, sel_amt = st.session_state[f"{statement}_{line}"]
+            corr_sign, corr_amt = answers.get(line, ("0", 0.0))
+            ok    = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 1e-6
+            color = "#D5F5E3" if ok else "#FADBD8"
+            icon  = "✅" if ok else f"❌ (expected {corr_sign}{corr_amt})"
+            st.markdown(
+                f'<div style="background:{color};padding:4px;border-radius:3px">'
+                f"{line}: {icon}</div>",
+                unsafe_allow_html=True
+            )
 
-    def check_line(statement, line):
-        sel_sign, sel_amt = st.session_state[f"{statement}_{line}"]
-        corr_sign, corr_amt = answers.get(line, ("0", 0.0))
-        ok    = (sel_sign == corr_sign) and abs(sel_amt - corr_amt) < 1e-6
-        color = "#D5F5E3" if ok else "#FADBD8"
-        icon  = "✅" if ok else f"❌ (expected {corr_sign}{corr_amt})"
-        st.markdown(
-            f'<div style="background:{color};padding:4px;border-radius:3px">'
-            f"{line}: {icon}</div>",
-            unsafe_allow_html=True
-        )
+        st.markdown("**Income Statement**")
+        for ln in income_lines:
+            check_line("Income Statement", ln)
 
-    st.markdown("**Income Statement**")
-    for ln in income_lines:
-        check_line("Income Statement", ln)
+        st.markdown("**Balance Sheet**")
+        for ln in bs_lines:
+            check_line("Balance Sheet", ln)
 
-    st.markdown("**Balance Sheet**")
-    for ln in bs_lines:
-        check_line("Balance Sheet", ln)
-
-    st.markdown("**Cash Flow Statement**")
-    for ln in cfs_lines:
-        check_line("Cash Flow Statement", ln)
+        st.markdown("**Cash Flow Statement**")
+        for ln in cfs_lines:
+            check_line("Cash Flow Statement", ln)
+            
