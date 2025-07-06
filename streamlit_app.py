@@ -54,8 +54,10 @@ cfs_lines = [
 # ── 3) Helper to build a zeroed DataFrame and apply the answers ───────────────
 def build_df(lines, changes):
     df = pd.DataFrame(0.0, index=lines, columns=["Change"])
-    for line, amt in changes.items():
+    for line, val in changes.items():
         if line in df.index:
+            # val might be ("+", amount) or already a number
+            amt = val[1] if (isinstance(val, tuple) and len(val) >= 2) else val
             df.at[line, "Change"] = amt
     return df.round(2)
 
