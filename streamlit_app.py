@@ -9,14 +9,13 @@ transactions = [
     {
         "transaction": "Inventory increases by $60",
         "answers": {
-            # Income Statement (no impact)
             # Balance Sheet
-            "Inventories":                          +60.0,
-            "Cash":                                 -60.0,
+            "Inventories":                         +60.0,
+            "Cash":                                -60.0,
             # Cash Flow
-            "Changes in Inventories":               -60.0,
-            "Cash flow from operating activities":  -60.0,
-            "Ending cash balance":                  -60.0,
+            "Changes in Inventories":              -60.0,
+            "Cash flow from operating activities": -60.0,
+            "Ending cash balance":                 -60.0,
         },
     },
     # … add more scenarios here …
@@ -48,7 +47,6 @@ cfs_lines = [
     "Cash flow from financing activities", "Ending cash balance"
 ]
 
-
 # ── 3) Builders: create zeroed DataFrames + populate with answers ────────────
 def build_df(lines, changes):
     df = pd.DataFrame(0.0, index=lines, columns=["Change"])
@@ -72,33 +70,39 @@ def style_income(df: pd.DataFrame):
     )
 
 def style_balance(df: pd.DataFrame):
-    def section_color(idx):
-        # first 9 = assets, next 7 = liabilities, rest = equity
-        if idx in bs_lines[:9]:
-            return ["#fadbd8"]  # light red
-        if idx in bs_lines[9:16]:
-            return ["#f5b7b1"]  # pink
-        return ["#fadbd8"]
+    def section_color(row):
+        if row.name in bs_lines[:9]:       # assets
+            color = "#fadbd8"
+        elif row.name in bs_lines[9:16]:   # liabilities
+            color = "#f5b7b1"
+        else:                              # equity
+            color = "#fadbd8"
+        return [f"background-color: {color};"] * len(row)
+
     return (
         df.style
           .set_caption("<b>Balance Sheet Changes</b>")
           .format("{:+.2f}")
-          .apply(lambda row: section_color(row.name), axis=1)
+          .apply(section_color, axis=1)
           .set_properties(**{"text-align": "right"})
     )
 
 def style_cashflow(df: pd.DataFrame):
-    def cf_color(idx):
-        if "operating" in idx.lower():
-            return ["#d5f5e3"]  # light green
-        if "investing" in idx.lower():
-            return ["#a9dfbf"]
-        return ["#d5f5e3"]
+    def cf_color(row):
+        key = row.name.lower()
+        if "operating" in key:
+            color = "#d5f5e3"
+        elif "investing" in key:
+            color = "#a9dfbf"
+        else:
+            color = "#d5f5e3"
+        return [f"background-color: {color};"] * len(row)
+
     return (
         df.style
           .set_caption("<b>Cash Flow Statement Changes</b>")
           .format("{:+.2f}")
-          .apply(lambda row: cf_color(row.name), axis=1)
+          .apply(cf_color, axis=1)
           .set_properties(**{"text-align": "right"})
     )
 
@@ -130,3 +134,4 @@ with tab_bs:
 
 with tab_cfs:
     st.write(style_cashflow(cfs_df))
+    
