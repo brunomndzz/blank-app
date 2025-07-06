@@ -9,22 +9,154 @@ transactions = [
         "transaction": "Increase depreciation expense by $10 (40% tax)",
         "answers": {
             # Income Statement
-            "Minus Dep&Amort": ("+", 10.0),
-            "EBIT": ("-", 10.0),
-            "Pre-Tax Income": ("-", 10.0),
-            "Minus Taxes (40%)": ("-", 4.0),
-            "Net Income": ("-", 6.0),
+            "Minus Dep&Amort":                        ("+", 10.0),
+            "EBIT":                                   ("-", 10.0),
+            "Pre-Tax Income":                         ("-", 10.0),
+            "Minus Taxes (40%)":                      ("-",  4.0),
+            "Net Income":                             ("-",  6.0),
             # Balance Sheet
-            "PPE": ("-", 10.0),
-            "Accumulated Depreciation": ("+", 10.0),
-            "Retained Earnings": ("-", 6.0),
-            # Cash Flow
-            "Depreciation & Amortization": ("+", 10.0),
-            "Cash flow from operating activities": ("+", 4.0),
-            "Ending cash balance": ("+", 4.0),
-        }
+            "PPE":                                    ("-", 10.0),
+            "Accumulated Depreciation":               ("+", 10.0),
+            "Retained Earnings":                      ("-",  6.0),
+            # Cash Flow Statement
+            "Depreciation & Amortization":            ("+", 10.0),
+            "Cash flow from operating activities":    ("+",  4.0),
+            "Ending cash balance":                    ("+",  4.0),
+        },
     },
-    # … add more scenarios here
+    {
+        "transaction": "Revenue increases by $100 and OPEX increases by $40 (40% tax)",
+        "answers": {
+            # Income Statement
+            "Revenue":                                ("+", 100.0),
+            "Gross profit":                           ("+", 100.0),
+            "OPEX":                                   ("+",  40.0),
+            "EBIT":                                   ("+",  60.0),
+            "Pre-Tax Income":                         ("+",  60.0),
+            "Minus Taxes (40%)":                      ("-",  24.0),
+            "Net Income":                             ("+",  36.0),
+            # Balance Sheet
+            "Cash":                                   ("+",  36.0),
+            "Retained Earnings":                      ("+",  36.0),
+            # Cash Flow Statement
+            "Cash flow from operating activities":    ("+",  36.0),
+            "Ending cash balance":                    ("+",  36.0),
+        },
+    },
+    {
+        "transaction": "Accounts Receivable increase of $50 (40% tax)",
+        "answers": {
+            # Income Statement
+            "Revenue":                                ("+",  50.0),
+            "Pre-Tax Income":                         ("+",  50.0),
+            "Minus Taxes (40%)":                      ("-",  20.0),
+            "Net Income":                             ("+",  30.0),
+            # Balance Sheet
+            "Accounts receivable":                    ("+",  50.0),
+            "Cash":                                   ("-",  20.0),
+            "Retained Earnings":                      ("+",  30.0),
+            # Cash Flow Statement
+            "Changes in Accounts receivable":         ("-",  50.0),
+            "Cash flow from operating activities":    ("-",  20.0),
+            "Ending cash balance":                    ("-",  20.0),
+        },
+    },
+    {
+        "transaction": "Depreciation increases by $30 (40% tax)",
+        "answers": {
+            # Income Statement
+            "Minus Dep&Amort":                        ("+",  30.0),
+            "EBIT":                                   ("-",  30.0),
+            "Pre-Tax Income":                         ("-",  30.0),
+            "Minus Taxes (40%)":                      ("-",  12.0),
+            "Net Income":                             ("-",  18.0),
+            # Balance Sheet
+            "PPE":                                    ("-",  30.0),
+            "Accumulated Depreciation":               ("+",  30.0),
+            "Retained Earnings":                      ("-",  18.0),
+            "Cash":                                   ("+",  12.0),
+            # Cash Flow Statement
+            "Depreciation & Amortization":            ("+",  30.0),
+            "Cash flow from operating activities":    ("+",  12.0),
+            "Ending cash balance":                    ("+",  12.0),
+        },
+    },
+    {
+        "transaction": "Purchase of PPE increases by $100",
+        "answers": {
+            # Cash Flow Statement
+            "Purchase of PPE (CAPEX)":                ("-", 100.0),
+            "Cash flow from investing activities":    ("-", 100.0),
+            "Ending cash balance":                    ("-", 100.0),
+            # Balance Sheet
+            "Cash":                                   ("-", 100.0),
+            "PPE":                                    ("+", 100.0),
+        },
+    },
+    {
+        "transaction": "Accounts payable increases by $70",
+        "answers": {
+            # Cash Flow Statement
+            "Changes in Accounts payable":            ("+",  70.0),
+            "Cash flow from operating activities":    ("+",  70.0),
+            "Ending cash balance":                    ("+",  70.0),
+            # Balance Sheet
+            "Cash":                                   ("+",  70.0),
+            "Accounts payable":                       ("+",  70.0),
+        },
+    },
+    {
+        "transaction": "New debt issuance of $150",
+        "answers": {
+            # Cash Flow Statement
+            "Cash flow from financing activities":    ("+", 150.0),
+            "Ending cash balance":                    ("+", 150.0),
+            # Balance Sheet
+            "Cash":                                   ("+", 150.0),
+            "Term debt":                              ("+", 150.0),
+        },
+    },
+    {
+        "transaction": "Inventory increases by $60",
+        "answers": {
+            # Balance Sheet
+            "Inventories":                            ("+",  60.0),
+            "Cash":                                   ("-",  60.0),
+            # Cash Flow Statement
+            "Changes in Inventories":                 ("-",  60.0),
+            "Cash flow from operating activities":    ("-",  60.0),
+            "Ending cash balance":                    ("-",  60.0),
+        },
+    },
+    {
+        "transaction": "Deferred revenue decreases by $80 (40% tax)",
+        "answers": {
+            # Income Statement
+            "Revenue":                                ("+",  80.0),
+            "Pre-Tax Income":                         ("+",  80.0),
+            "Minus Taxes (40%)":                      ("-",  32.0),
+            "Net Income":                             ("+",  48.0),
+            # Balance Sheet
+            "Deferred revenue":                       ("-",  80.0),
+            "Cash":                                   ("-",  32.0),
+            "Retained Earnings":                      ("+",  48.0),
+            # Cash Flow Statement
+            "Changes in Deferred revenue":            ("-",  80.0),
+            "Cash flow from operating activities":    ("-",  32.0),
+            "Ending cash balance":                    ("-",  32.0),
+        },
+    },
+    {
+        "transaction": "Issuance of common stock by $100",
+        "answers": {
+            # Cash Flow Statement
+            "Cash flow from financing activities":    ("+", 100.0),
+            "Ending cash balance":                    ("+", 100.0),
+            # Balance Sheet
+            "Cash":                                   ("+", 100.0),
+            "Common stock":                           ("+", 100.0),
+        },
+    },
 ]
 
 # ── 2) Define your row-labels for each statement ───────────────────────────────
